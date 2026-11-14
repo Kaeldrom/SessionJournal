@@ -19,7 +19,7 @@ local TICK = 30
 local MAX_LOOT, MAX_QUESTS, MAX_KILL_NAMES = 80, 150, 150
 local DEFAULT_SETTINGS = { welcome = true, max = 300 }
 
-local db, cur, myKey
+local db, cur, myKey, myFull
 local lastXP, lastXPMax, lastMoney, lastQuestTitle
 
 local function Print(msg)
@@ -151,7 +151,7 @@ local function NewSession()
     local name = UnitFullName("player")
     local _, class = UnitClass("player")
     local s = {
-        id = db.nextId, char = myKey, name = name, class = class,
+        id = db.nextId, char = myKey, name = name, full = myFull, class = class,
         start = time(), last = time(), afk = 0,
         level1 = UnitLevel("player"), level2 = UnitLevel("player"),
         xp = 0, earned = 0, spent = 0,
@@ -394,6 +394,21 @@ local function OnLogin()
     local name, realm = UnitFullName("player")
     if not realm or realm == "" then realm = GetNormalizedRealmName and GetNormalizedRealmName() or "" end
     myKey = name .. "-" .. realm
+    if RegionalUniqueNamesEnabled and RegionalUniqueNamesEnabled() then
+        -- WoW Forever: no realms, names are "First Surname". 1.0.0 used "First-<realm slot>";
+        -- re-file those sessions under the full name.
+        local first, surname = (UnitNameUnmodified or UnitName)("player")
+        local full = (surname and surname ~= "") and (first .. " " .. surname) or first
+        local old = myKey
+        myKey = full
+        for _, s in ipairs(db.sessions) do
+            if s.char == old then s.char = full end
+            if s.char == full then s.full = full end
+        end
+        if db.active[old] and not db.active[full] then db.active[full] = db.active[old] end
+        db.active[old] = nil
+        myFull = full
+    end
 
     BuildPatterns()
     local isNew = StartOrResume()

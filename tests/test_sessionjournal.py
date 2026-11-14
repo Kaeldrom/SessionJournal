@@ -219,5 +219,22 @@ run("SlashCmdList.SESSIONJOURNAL('welcome')")
 check("welcome off", lua.eval("SessionJournalDB.settings.welcome") is False)
 run("SlashCmdList.SESSIONJOURNAL('help')")
 
+
+# ---- WoW Forever surnames: 1.0.0 sessions re-filed under the full name ------
+run("""
+RegionalUniqueNamesEnabled = function() return true end
+P.name = 'Gromir'; P.realm = 'Crypmaghar'
+function UnitNameUnmodified() return 'Gromir', 'Crypmaghar' end
+NOW = NOW + 60
+table.insert(SessionJournalDB.sessions, { id = 999, char = 'Gromir-Crypmaghar', name = 'Gromir', class = 'MAGE', start = NOW - 30, last = NOW - 10,
+  afk = 0, level1 = 60, level2 = 60, xp = 0, earned = 0, spent = 0, zones = {}, levels = {}, quests = { { title = 'Q', t = NOW } }, loot = {}, lootCount = 0,
+  kills = {}, killCount = 0, deaths = {}, dungeons = {}, skills = {}, notes = {} })
+SessionJournalDB.active['Gromir-Crypmaghar'] = 999
+""")
+ev = load(); ev("PLAYER_LOGIN")
+check("regional key is full name", lua.eval("SessionJournal.MyKey()") == "Gromir Crypmaghar")
+check("old session re-filed + resumed", s("id") == 999 and s("char") == "Gromir Crypmaghar")
+check("page shows full name", "Gromir Crypmaghar" in lua.eval("SessionJournal.UI.Page(SessionJournal.Current())"))
+
 print(f"{passed} passed, {failed} failed")
 sys.exit(1 if failed else 0)

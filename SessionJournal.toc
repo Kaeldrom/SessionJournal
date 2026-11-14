@@ -2,7 +2,7 @@
 ## Title: |cff99ccffSession Journal|r
 ## Notes: Writes a diary of every play session (places, levels, quests, monsters, loot, deaths, gold) that you can read back and add notes to.
 ## Author: Kaeldrom
-## Version: 1.0.0
+## Version: 1.0.1
 ## SavedVariables: SessionJournalDB
 ## AddonCompartmentFunc: SessionJournal_Open
 ## IconTexture: Interface\Icons\INV_Misc_Book_09

@@ -57,7 +57,7 @@ function UI.Page(s)
     Add(BLUE .. date("%A %d %B %Y", s.start) .. "|r" .. (live and (GREEN .. "  (playing now)|r") or ""))
     local played = SJ.Duration(SJ.Played(s))
     local afk = (s.afk or 0) >= 60 and (GREY .. " (" .. SJ.Duration(s.afk) .. " away)|r") or ""
-    Add(ClassHex(s.class) .. (s.name or s.char) .. "|r" .. GREY .. "  " .. Clock(s.start) .. " - " .. Clock(s.last) .. "|r  " .. played .. afk)
+    Add(ClassHex(s.class) .. (s.full or s.name or s.char) .. "|r" .. GREY .. "  " .. Clock(s.start) .. " - " .. Clock(s.last) .. "|r  " .. played .. afk)
     if s.level2 and s.level1 and s.level2 > s.level1 then
         Add("Level " .. s.level1 .. " -> " .. GREEN .. s.level2 .. "|r")
     else
