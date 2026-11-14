@@ -1,0 +1,7 @@
+package-as: SessionJournal
+
+ignore:
+  - tests
+  - README.md
+  - .github
+  - .gitignore
